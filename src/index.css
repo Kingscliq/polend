@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Oswald:wght@500;700&family=Poppins:wght@200;300;400;500;600;700;800;900&family=Rubik+Dirt&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Poppins', system-ui, sans-serif;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+    background-color: #2b2d3c;
+    /* For browsers that do not support gradients */
+    background-image: linear-gradient(
+      to bottom left,
+      #020308,
+      rgba(29, 29, 63, 0.893),
+      #05a7ec20
+    );
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+.Toastify__toast-theme--light {
+  font-size: 12px;
+}
+
+.text {
+  color: rgba(255, 255, 255, 0.083);
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 0;
+  /* Remove scrollbar space */
+  background: transparent;
+  /* Optional: just make scrollbar invisible */
+}
+
+.health-4 {
+  color: #00ff73;
+}
+
+.health-3 {
+  color: #66ff00;
+}
+
+.health-2 {
+  color: #d0ff00;
+}
+
+.health-1 {
+  color: #ffd000;
+}
+
+.health-0 {
+  color: #ff5b00;
+}
