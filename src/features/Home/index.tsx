@@ -25,6 +25,9 @@ import { convertNumber, toFixed } from '@utils/tifi';
 import WalletConnector from '@components/widget/connect-wallet/wallet-connector';
 import { tifiTokenAbi } from '@config/Tifi_token_abi';
 import Button from '@components/elements/Button';
+import SupplyTable from './table/SuppliesTable';
+import BorrowPage from '@pages/loan/BorrowPage';
+import BorrowTable from './table/BorrowTable';
 
 const Home = () => {
   const { language } = useLanguage();
@@ -173,6 +176,9 @@ const Home = () => {
                 </div>
 
               </div>
+              <div className='mt-6'>
+                <SupplyTable />
+              </div>
             </Card>
             <Card className='w-full bg-dark-grey'>
               <div className='text-white mb-4'>
@@ -189,6 +195,9 @@ const Home = () => {
                   <span className='font-medium text-sm text-tifi-grey'>Collateral</span> <span className='text-white'>$200</span>
                 </div>
 
+              </div>
+              <div className='mt-6'>
+                <BorrowTable />
               </div>
             </Card>
           </div>

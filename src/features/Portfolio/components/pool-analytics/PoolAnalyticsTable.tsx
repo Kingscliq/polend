@@ -53,7 +53,7 @@ const PoolAnalyticsTable = () => {
     columnHelper.accessor((row) => row.liquidity, {
       id: 'liquidity',
       header: () => <span>{T('Liquidity')}</span>,
-      cell: (info) => <span>$ {toFixed(Number(info.getValue()))}</span>,
+      cell: (info) => <span>${toFixed(Number(info.getValue()))}</span>,
     }),
     columnHelper.accessor((row) => row.apy, {
       id: 'apy',

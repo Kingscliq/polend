@@ -7,7 +7,7 @@ import {
 type TableProps = {
   columns: any | [];
   data: {}[] | any;
-  title: string;
+  title?: string;
 };
 
 const Table = ({ columns, data, title }: TableProps) => {
@@ -18,26 +18,29 @@ const Table = ({ columns, data, title }: TableProps) => {
   });
 
   return (
-    <div className="p-2 w-full overflow-x-auto">
-      <h2 className="capitalize text-white text-lg py-6 px-8 bg-gradient-to-l from-tifi-dark via-neutral-black-700 to-transparent bg-opacity-30 backdrop-blur-[176px] rounded-t-xl">
-        {title}
-      </h2>
+    <div className="w-full overflow-x-auto">
+      {title && (
+        <h2 className="capitalize text-white text-lg py-6 px-8 bg-gradient-to-l from-tifi-dark via-neutral-black-700 to-transparent bg-opacity-30 backdrop-blur-[176px] rounded-t-xl">
+          {title}
+        </h2>
+      )}
+
       <div className="overflow-x-auto">
         <table className="text-white w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-neutral-black-600 w-full">
+              <tr key={headerGroup.id} className="bg-primary w-full">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="text-sm text-left text-neutral-black-0 font-normal capitalize whitespace-nowrap py-5 px-8"
+                    className="text-sm text-left text-neutral-black-0 font-normal capitalize whitespace-nowrap py-5 px-4"
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </th>
                 ))}
               </tr>
@@ -49,7 +52,7 @@ const Table = ({ columns, data, title }: TableProps) => {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="text-sm text-white font-normal capitalize whitespace-nowrap py-6 px-8"
+                    className="text-sm text-white font-normal text-left capitalize whitespace-nowrap py-6 px-4"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
