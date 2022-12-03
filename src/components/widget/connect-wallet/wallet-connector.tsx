@@ -33,9 +33,8 @@ export const WalletButton = ({
         alt="Wallet connect icon"
       />
       <span
-        className={`capitalize text-sm mt-3 block whitespace-normal ${
-          disabled ? 'text-neutral-black-0' : 'text-white'
-        }`}
+        className={`capitalize text-sm mt-3 block whitespace-normal ${disabled ? 'text-neutral-black-0' : 'text-white'
+          }`}
       >
         {label}
       </span>
@@ -45,7 +44,6 @@ export const WalletButton = ({
 
 const WalletConnector: React.FC<{ label?: string }> = ({ label }) => {
   const [openConnectModal, setOpenConnectModal] = useState(false);
-  const [accept, setAccept] = useState(false);
   const { error, account } = useWeb3React();
 
   const { login } = useAuthActions();
@@ -84,18 +82,7 @@ const WalletConnector: React.FC<{ label?: string }> = ({ label }) => {
           title="Connect Wallet"
           modalBody={
             <>
-              <div className="flex items-center my-5">
-                <input
-                  type="checkbox"
-                  className="accent-primary"
-                  checked={accept}
-                  onChange={() => setAccept(!accept)}
-                />
-                <label className="ml-3 text-grey-100 text-sm font-normal">
-                  I have read, understand, and agree to the
-                  <span className="text-primary">Terms of Service.</span>
-                </label>
-              </div>
+
 
               <div className="mt-10 grid grid-cols-3 lg:grid-cols-4 gap-8">
                 {connectors_data?.map((item) => (
@@ -103,7 +90,7 @@ const WalletConnector: React.FC<{ label?: string }> = ({ label }) => {
                     key={item?.title}
                     src={item?.icon}
                     label={item?.title}
-                    disabled={!accept}
+                    disabled={false}
                     // onClick={() => selectWallet(item?.title)}
                     onClick={() => connect(item)}
                   />

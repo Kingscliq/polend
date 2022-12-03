@@ -1,6 +1,5 @@
 import React from 'react';
-import Stake from '../../features/Stake';
 
-const StakePage = () => <Stake />;
+const StakePage = () => "Hello";
 
 export default StakePage;

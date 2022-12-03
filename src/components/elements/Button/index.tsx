@@ -59,11 +59,10 @@ const Button: React.FC<ButtonProps> = ({
             </div>
           )}
           <div
-            className={`md:w-fit ${
-              btnLeftIcon !== '' || btnRightIcon !== '' ? 'w-full' : null
-            } `}
+            className={`md:w-fit ${btnLeftIcon !== '' || btnRightIcon !== '' ? 'w-full' : null
+              } `}
           >
-            <p className="text-center text-sm md:text-base whitespace-nowrap">
+            <p className="text-center whitespace-nowrap">
               {label || 'Button Text'}
             </p>
           </div>

@@ -5,11 +5,8 @@ import type { WebStorage } from 'redux-persist';
 import { persistReducer } from 'redux-persist';
 import Auth from '../slices/authSlice';
 import Language from '../slices/languageSlice';
-import Reserves from '@features/Swap/slices';
-import Records from '@features/Stake/Stake.store';
-import Liquidity from '@features/Liquidity/Liquidity.store';
 import Alert from '../slices/alertSlice'
-import Loan from '@features/Loan/Loan.store'
+import Lend from '@features/Home/Home.store'
 
 import {
   initMessageListener,
@@ -28,11 +25,8 @@ export const persistConfig: PersitConfig = {
 const rootReducer = combineReducers({
   user: Auth.reducer,
   language: Language.reducer,
-  reserves: Reserves.reducer,
-  stakeRecords: Records.reducer,
-  liquidity: Liquidity.reducer,
   alert: Alert.reducer,
-  loan: Loan.reducer
+  lend: Lend.reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

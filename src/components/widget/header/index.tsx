@@ -152,7 +152,7 @@ const Header = ({ openNav }: any) => {
             <div className="ml-4">
               <Button
                 onClick={() => logout()}
-                className="transition-all duration-600 hidden lg:block ease-in-out text-white text-xs lg:text-base hover:bg-gradient-to-r hover:from-[#047CFD] hover:to-primary rounded-lg lg:rounded-xl"
+                className="transition-all duration-600 hidden lg:block ease-in-out text-white text-xs lg:text-base bg-primary rounded-lg lg:rounded-xl"
                 label="Logout"
               />
             </div>

@@ -41,22 +41,23 @@ const BorrowAssetsTable = () => {
     const columns = [
         columnHelper.accessor((row) => row.amount, {
             id: 'amount',
-            header: () => <span>Amount of TiFi</span>,
+            header: () => <span>Assets</span>,
             cell: (info) => <span>{info.getValue()}</span>,
         }),
         columnHelper.accessor((row) => row.valueUSD, {
             id: 'valueUSD',
-            header: () => <span>Value USD</span>,
+            header: () => <span>Available</span>,
             cell: (info) => <span>{info.getValue()}</span>,
         }),
         columnHelper.accessor((row) => row.valueBNB, {
             id: 'valueBNB',
-            header: () => <span>Value BNB</span>,
+            header: () => <span>APY, Variable</span>,
             cell: (info) => <span>{info.getValue()}</span>,
         }),
         columnHelper.accessor('time', {
-            header: () => <span>Time</span>,
+            header: () => <span>APY, Stable</span>,
         }),
+
     ];
 
     return <Table columns={columns} data={defaultData} />;
