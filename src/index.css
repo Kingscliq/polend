@@ -44,6 +44,14 @@
   /* Optional: just make scrollbar invisible */
 }
 
+@layer base {
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
 .health-4 {
   color: #00ff73;
 }

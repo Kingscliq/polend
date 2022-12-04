@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Modal from '../../elements/Modal';
 import { useWeb3React } from '@web3-react/core';
 import { connectors_data } from './config';
-// import { useAuthActions } from '@//features/Auth/hooks/useAuthActions';
 import { toast } from 'react-toastify';
 import { useAuthActions } from '../../../features/Auth/hooks/useAuthActions';
 

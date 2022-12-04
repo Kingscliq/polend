@@ -15,7 +15,7 @@ const App: React.FC<{}> = () => {
       const user = { address: account, provider: library };
       setUser(user);
     }
-    return () => { };
+    return () => {};
   }, [account, library, setUser]);
 
   return (
