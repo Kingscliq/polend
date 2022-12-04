@@ -6,7 +6,13 @@ import { useLocation } from 'react-router-dom';
 import ConnectWallet from '../connect-wallet';
 import { useWeb3React } from '@web3-react/core';
 import 'react-dropdown/style.css';
-import { homeActive, homeBase, logo, menuIcon, user } from '../../../assets/icons';
+import {
+  homeActive,
+  homeBase,
+  logo,
+  menuIcon,
+  user,
+} from '../../../assets/icons';
 import Button from '../../elements/Button';
 import { shorten } from '../../../utils/formatters';
 import useAuthConnect from '../../../features/Auth/hooks/useAuthConnect';
@@ -80,10 +86,9 @@ const Header = ({ openNav }: any) => {
   return (
     <nav>
       <section className="flex items-center justify-between">
-
-        <div className='flex items-center'>
+        <div className="flex items-center">
           <div className="flex items-center">
-            <button onClick={openNav} className="block lg:hidden">
+            <button onClick={openNav} className="block mr-4 lg:hidden">
               <img src={menuIcon} alt="menu" />
             </button>
 
@@ -96,28 +101,31 @@ const Header = ({ openNav }: any) => {
               {location?.pathname.split('/')[1].replaceAll('_', ' ')}
             </h2>
           </div>
-          <div className='flex items-center ml-24'>
+          <div className="hidden lg:flex items-center ml-24">
             <SidebarMenuItem
               // onClick={setOpenNav}
               baseIcon={homeBase}
               activeIcon={homeActive}
               title="Home"
               url="/"
-              active={location.pathname === '/'} />
+              active={location.pathname === '/'}
+            />
             <SidebarMenuItem
               // onClick={setOpenNav}
               baseIcon={homeBase}
               activeIcon={homeActive}
               title="Market"
               url="/market"
-              active={location.pathname === '/market'} />
+              active={location.pathname === '/market'}
+            />
             <SidebarMenuItem
               // onClick={setOpenNav}
               baseIcon={homeBase}
               activeIcon={homeActive}
               title="Learn More"
               url="/learn-more"
-              active={location.pathname === '/learn-more'} />
+              active={location.pathname === '/learn-more'}
+            />
           </div>
         </div>
 
