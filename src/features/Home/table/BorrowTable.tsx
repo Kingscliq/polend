@@ -1,88 +1,91 @@
+import { currencyIcon } from '@assets/icons';
 import Button from '@components/elements/Button';
 import Table from '@components/elements/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { SetStateAction } from 'react';
 
-type Person = {
-    amount: number;
+
+type Asset = {
+    asset: string;
     valueUSD: number;
-    valueBNB: number;
-    time: number;
-    withdrawBtn: string
-    supplyBtn: string
+    apy: string;
+    address: string;
+    withdraw: string
+    supply: string;
 };
-type BorrowTableProps = {
+type SupplyTableProps = {
     openModal: boolean;
     setOpenModal: React.Dispatch<SetStateAction<boolean>>;
-    setRepayModal: React.Dispatch<SetStateAction<boolean>>
-}
-const columnHelper = createColumnHelper<Person>();
+    setRepayModal: React.Dispatch<SetStateAction<boolean>>;
+    balance: number;
+    handleRepay: () => void;
+    repayLoading: boolean
+};
+const columnHelper = createColumnHelper<Asset>();
 
-const BorrowTable: React.FC<BorrowTableProps> = ({ openModal, setOpenModal, setRepayModal }) => {
-    const defaultData: Person[] = [
+const BorrowTable: React.FC<SupplyTableProps> = ({
+    openModal,
+    setOpenModal,
+    setRepayModal,
+    balance,
+    handleRepay,
+    repayLoading
+}) => {
+
+    const defaultData: Asset[] = [
         {
-            amount: 647,
-            valueUSD: 83750,
-            valueBNB: 24,
-            time: 100,
-            withdrawBtn: "",
-            supplyBtn: ""
-        },
-        {
-            amount: 877,
-            valueUSD: 2093.7,
-            valueBNB: 40,
-            time: 40,
-            withdrawBtn: "",
-            supplyBtn: ""
-        },
-        {
-            amount: 196,
-            valueUSD: 1976.14,
-            valueBNB: 45,
-            time: 20,
-            withdrawBtn: "",
-            supplyBtn: ""
-        },
-        {
-            amount: 492,
-            valueUSD: 1948.81,
-            valueBNB: 45,
-            time: 20,
-            withdrawBtn: "",
-            supplyBtn: ""
+            asset: "cusd",
+            valueUSD: 1.0,
+            apy: '<0.01%',
+            address: '',
+            withdraw: '',
+            supply: ''
         },
     ];
 
-
     const columns = [
-        columnHelper.accessor((row) => row.amount, {
-            id: 'amount',
+        columnHelper.accessor((row) => row.asset, {
+            id: 'asset',
             header: () => <span>Assets</span>,
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => <div className='flex items-center'><span className=''><img src={currencyIcon} alt="Logo" /></span><span className='ml-2'>{info.getValue().toUpperCase()}</span></div>,
         }),
         columnHelper.accessor((row) => row.valueUSD, {
             id: 'valueUSD',
-            header: () => <span>Wallet balance</span>,
+            header: () => <span>Balance</span>,
             cell: (info) => <span>{info.getValue()}</span>,
         }),
-        columnHelper.accessor((row) => row.valueBNB, {
-            id: 'valueBNB',
+        columnHelper.accessor((row) => row.apy, {
+            id: 'apy',
             header: () => <span>APY</span>,
             cell: (info) => <span>{info.getValue()}</span>,
         }),
-        columnHelper.accessor('time', {
-            header: () => <span>Collateral</span>,
-        }),
-        columnHelper.accessor('withdrawBtn', {
+        columnHelper.accessor('withdraw', {
             header: () => <span></span>,
-            cell: (info) => <span><Button label="Repay" className='bg-primary text-xs' onClick={() => {
-                setRepayModal(true)
-            }} /></span>
+            cell: (info) => (
+                <span>
+                    <Button
+                        label="Repay"
+                        className="bg-primary text-xs"
+                        onClick={handleRepay}
+                        loading={repayLoading}
+                    />
+                </span>
+            ),
         }),
-        columnHelper.accessor('supplyBtn', {
+        columnHelper.accessor('supply', {
             header: () => <span></span>,
-            cell: (info) => <span><Button label="Borrow" className='text-xs border border-purple-500 hover:opacity-50 hover:bg-primary transition-all duration-500 ease-out' onClick={() => setOpenModal(true)} /></span>
+            cell: (info) => (
+                <span>
+                    <Button
+                        label="Borrow"
+                        onClick={() => {
+                            setOpenModal(true);
+                            setRepayModal(false);
+                        }}
+                        className=" text-xs border border-purple-500 hover:opacity-50 hover:bg-primary-400 transition-all duration-500 ease-out"
+                    />
+                </span>
+            ),
         }),
     ];
     return <Table columns={columns} data={defaultData} />;

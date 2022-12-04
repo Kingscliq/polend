@@ -8,9 +8,11 @@ interface SupplyModalProps {
     setOpenModal: React.Dispatch<SetStateAction<boolean>>
     repayAmount: number | string;
     setRepayAmount: React.Dispatch<SetStateAction<string | number>>
+    handleRepay: () => void;
+    loading: boolean
 }
 
-const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, repayAmount, setRepayAmount }) => {
+const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, repayAmount, setRepayAmount, handleRepay, loading }) => {
     return (
         <Modal
             title="Repay"
@@ -18,28 +20,29 @@ const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, repay
             modalBody={
                 <div className='my-5 text-white/75'>
                     <div>
-                        <CustomTextField label='Amount' placeholder='$0.00' value={repayAmount} onChange={(e) => setRepayAmount(e.target.value)} />
+                        <CustomTextField coinLabel='USD' label='Amount' placeholder='$0.00' value={repayAmount} onChange={(e) => setRepayAmount(e.target.value)} />
                     </div>
                     <div className='my-8'>
                         <h3 className='mb-2'>Transaction Summary</h3>
-                        <div className='border-purple-50/40 opacity-40 border p-2'>
-                            <div className='flex items-center justify-between'>
-                                <div>Supply APY</div>
-                                <div>{"< 0.01 %"}</div>
+                        <div className="border-purple-50/40 opacity-40 border p-2">
+                            <div className="my-3 flex items-center justify-between">
+                                <div>
+                                    <small>Remaing Debts</small>
+                                </div>
+                                <div className="text-green-400">
+                                    <small>0.0098</small>
+                                </div>
                             </div>
-                            <div className='my-3 flex items-center justify-between'>
-                                <div>Collaterization</div>
-                                <div className='text-green-400'><small>Enabled</small></div>
-                            </div>
-                            <div className='flex items-center justify-between'>
-                                <div>Health Factor</div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <small>Health Factor</small>
+                                </div>
                                 <div></div>
                             </div>
                         </div>
-
                     </div>
                     <div>
-                        <Button label="Enter Amount" className='bg-primary'  />
+                        <Button label={`${repayAmount <= 0 || repayAmount === "" ? "Enter Amount" : "Repay Asset"}`} className='bg-primary' disabled={repayAmount <= 0} onClick={handleRepay} loading={loading} />
                     </div>
                 </div>
             }

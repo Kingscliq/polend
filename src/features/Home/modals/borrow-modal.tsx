@@ -8,9 +8,11 @@ interface BorrowModalProps {
     setOpenModal: React.Dispatch<SetStateAction<boolean>>
     borrowAmount: string | number;
     setBorrowAmount: React.Dispatch<SetStateAction<string | number>>
+    handleBorrow: () => void;
+    loading: boolean;
 }
 
-const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borrowAmount, setBorrowAmount }) => {
+const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borrowAmount, setBorrowAmount, handleBorrow, loading }) => {
     return (
         <Modal
             title="Borrow"
@@ -18,7 +20,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borr
             modalBody={
                 <div className='my-5 text-white/75'>
                     <div>
-                        <CustomTextField label='Amount' placeholder='$0.00' value={borrowAmount} onChange={(e) => setBorrowAmount(e.target.value)} />
+                        <CustomTextField coinLabel='USD' label='Amount' placeholder='$0.00' value={borrowAmount} onChange={(e) => setBorrowAmount(e.target.value)} />
                     </div>
                     <div className='my-8'>
                         <h3 className='mb-2'>Transaction Summary</h3>
@@ -38,7 +40,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borr
                         </div>
                     </div>
                     <div>
-                        <Button label={`${borrowAmount <= 0 || borrowAmount === "" ? "Enter Amount" : "Borrow Asset"}`} className='bg-primary' disabled={borrowAmount <= 0} />
+                        <Button label={`${borrowAmount <= 0 || borrowAmount === "" ? "Enter Amount" : "Borrow Asset"}`} className='bg-primary' disabled={borrowAmount <= 0} onClick={handleBorrow} loading={loading} />
                     </div>
                 </div>
             }

@@ -49,9 +49,11 @@ import redRubyBag from './tifi-red-ruby-bag.svg'
 import tifiJackpot from './tifi-jackpot.svg'
 import wallet from './wallet-vector.svg'
 import currencyIcon from './cusd.png'
+import matic from './matic.svg'
 
 export {
     homeActive,
+    matic,
     currencyIcon,
     wallet,
     homeBase,

@@ -4,7 +4,7 @@ import { chartBall } from '../../assets/images';
 import Card from '../../components/elements/Card';
 import Header from './components/Header';
 import { useLanguage, useLanguageActions } from '@hooks/useLanguage';
-import { CONTRACT_ADDRESS, SCAN_URL } from '@config/constants';
+import { CONTRACT_ADDRESS, SCAN_URL, TOKEN_ADDRESS } from '@config/constants';
 import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import WalletConnector from '@components/widget/connect-wallet/wallet-connector';
@@ -38,6 +38,8 @@ const Home = () => {
   const [borrowAmount, setBorrowAmount] = useState<number | string>('');
   const [repayAmount, setRepayAmount] = useState<number | string>('');
   const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
+  const [repayLoading, setRepayLoading] = useState<boolean>(false)
+
 
   // loading states
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
@@ -63,7 +65,7 @@ const Home = () => {
         },
       });
 
-      tx.wait()
+
 
       setAlert({
         message: 'Transaction Succesful!',
@@ -92,20 +94,47 @@ const Home = () => {
   };
 
   const handleBorrow = async () => {
-    setSupplyLoading(true)
+    setBorrowLoading(true)
     const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
-
     try {
       if (address != null) {
-        const tx = await contract.borrow(extendToBigNumber(borrowAmount))
+        const tx = await contract.borrow(TOKEN_ADDRESS, extendToBigNumber(borrowAmount))
+        setAlert({
+          message: 'Transaction Submitted!',
+          type: 'notice',
+          url: {
+            link: `${SCAN_URL}/tx/${tx.hash}`,
+            text: 'Check Transaction on PolygonScan',
+          },
+        });
 
-      } else {
-        return 0;
+        setAlert({
+          message: 'Transaction Succesful!',
+          type: 'success',
+          url: {
+            link: `${SCAN_URL}/tx/${tx.hash}`,
+            text: 'Check Transaction on PolygonScan',
+          },
+        });
       }
-    } catch (error) {
-      return 0;
+    } catch (error: any) {
+      setBorrowLoading(false);
+      const borrowError = error?.error
+        ? error.error.data.message
+        : getErrorMessage(error.error.code);
+
+      setAlert({
+        message: borrowError,
+        type: 'error',
+        url: {
+          link: '',
+          text: '',
+        },
+      });
+
     }
   }
+
   const handleWithdraw = async () => {
     setWithdrawLoading(true);
 
@@ -115,18 +144,71 @@ const Home = () => {
         PolendAbi,
         provider.getSigner(),
       );
-      const tx = await contract.withdraw(extendToBigNumber(withdrawAmount));
+
+      const tx = await contract.repay(extendToBigNumber(repayAmount));
+
       setWithdrawLoading(false);
     } catch (error: any) {
       setWithdrawLoading(false);
       setWithdrawModal(false);
-      console.log(error);
       const withdrawError = error?.error
         ? error.error.data.message
         : getErrorMessage(error.error.code);
 
       setAlert({
         message: withdrawError,
+        type: 'error',
+        url: {
+          link: '',
+          text: '',
+        },
+      });
+    }
+  };
+
+  const handleRepay = async () => {
+    setRepayLoading(true);
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      PolendAbi,
+      provider.getSigner(),
+    );
+
+    try {
+
+      if (address != null) {
+        const tx = await contract.repay(repayAmount)
+
+        setAlert({
+          message: 'Transaction Submitted!',
+          type: 'notice',
+          url: {
+            link: `${SCAN_URL}/tx/${tx.hash}`,
+            text: 'Check Transaction on PolygonScan',
+          },
+        });
+
+        contract.on("Repayed", () => {
+          setAlert({
+            message: 'Transaction Succesful!',
+            type: 'success',
+            url: {
+              link: `${SCAN_URL}/tx/${tx.hash}`,
+              text: 'Check Transaction on PolygonScan',
+            },
+          });
+        })
+
+
+      }
+      setRepayModal(false)
+    } catch (error: any) {
+      setRepayLoading(false)
+      const repayError = error?.error
+        ? error.error.data.message
+        : getErrorMessage(error.error.code);
+      setAlert({
+        message: repayError,
         type: 'error',
         url: {
           link: '',
@@ -154,6 +236,7 @@ const Home = () => {
       setCollateralAmount(Number(collateralAmount));
 
       const debt = ethers.utils.formatEther(resp?.debt._hex);
+      setRepayAmount(resp?.debt)
       setDebtAmount(Number(debt));
 
       const coin = ethers.utils.formatEther(resp?.coin);
@@ -206,14 +289,19 @@ const Home = () => {
           setOpenModal={setBorrowModal}
           borrowAmount={borrowAmount}
           setBorrowAmount={setBorrowAmount}
+          loading={borrowLoading}
+          handleBorrow={handleBorrow}
         />
       )}
+
       {repayModal && (
         <RepayModal
           openModal={repayModal}
           setOpenModal={setRepayModal}
           repayAmount={repayAmount}
           setRepayAmount={setRepayAmount}
+          handleRepay={handleRepay}
+          loading={repayLoading}
         />
       )}
       {withdrawModal && (
@@ -350,7 +438,9 @@ const Home = () => {
                   openModal={supplyModal}
                   setOpenModal={setBorrowModal}
                   setRepayModal={setRepayModal}
-                />
+                  balance={0}
+                  handleRepay={handleRepay}
+                  repayLoading={false} />
               </div>
             </Card>
           </div>

@@ -17,6 +17,7 @@ interface TextFieldProps {
     props?: ComponentProps<JSXElementConstructor<any>>;
     inputClass?: string;
     disabled?: boolean;
+    coinLabel?: string;
 }
 
 const CustomTextField: React.FC<TextFieldProps> = ({
@@ -34,6 +35,7 @@ const CustomTextField: React.FC<TextFieldProps> = ({
     inputClass,
     props,
     disabled,
+    coinLabel
 }) => {
     return (
         <div>
@@ -73,7 +75,7 @@ const CustomTextField: React.FC<TextFieldProps> = ({
                             />
                         </div>
                         <div className='ml-3 col-span-1'>
-                            MATIC
+                            {coinLabel || "MATIC"}
                         </div>
                     </div>
                     <div className='flex items-center justify-between text-purple-100'>

@@ -27,7 +27,7 @@ const WithdrawModal: React.FC<SupplyModalProps> = ({
       modalBody={
         <div className="my-5 text-white/75">
           <div>
-            <CustomTextField label="Amount" placeholder="$0.00" />
+            <CustomTextField coinLabel='USD' label="Amount" placeholder="$0.00" />
           </div>
           <div className="my-16">
             <h3 className="mb-2">Transaction Summary</h3>
