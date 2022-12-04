@@ -6,9 +6,11 @@ import CustomTextField from '../components/CustomTextField';
 interface SupplyModalProps {
     openModal: boolean;
     setOpenModal: React.Dispatch<SetStateAction<boolean>>
+    withdrawAmount: number | string;
+    setWithdrawAmount: React.Dispatch<SetStateAction<number | string>>
 }
 
-const WithdrawModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal }) => {
+const WithdrawModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, withdrawAmount, setWithdrawAmount }) => {
     return (
         <Modal
             title="Withdraw"
@@ -18,20 +20,16 @@ const WithdrawModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal }) 
                     <div>
                         <CustomTextField label='Amount' placeholder='$0.00' />
                     </div>
-                    <div className='my-8'>
+                    <div className='my-16'>
                         <h3 className='mb-2'>Transaction Summary</h3>
                         <div className='border-purple-50/40 opacity-40 border p-2'>
                             <div className='flex items-center justify-between'>
-                                <div>Supply APY</div>
+                                <div><small>Remaining supply</small></div>
                                 <div>{"< 0.01 %"}</div>
                             </div>
                             <div className='my-3 flex items-center justify-between'>
-                                <div>Collaterization</div>
+                                <div><small>Health Factor</small></div>
                                 <div className='text-green-400'><small>Enabled</small></div>
-                            </div>
-                            <div className='flex items-center justify-between'>
-                                <div>Health Factor</div>
-                                <div></div>
                             </div>
                         </div>
                     </div>

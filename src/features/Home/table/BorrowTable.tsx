@@ -1,6 +1,7 @@
 import Button from '@components/elements/Button';
 import Table from '@components/elements/Table';
 import { createColumnHelper } from '@tanstack/react-table';
+import { SetStateAction } from 'react';
 
 type Person = {
     amount: number;
@@ -10,10 +11,14 @@ type Person = {
     withdrawBtn: string
     supplyBtn: string
 };
-
+type BorrowTableProps = {
+    openModal: boolean;
+    setOpenModal: React.Dispatch<SetStateAction<boolean>>;
+    setRepayModal: React.Dispatch<SetStateAction<boolean>>
+}
 const columnHelper = createColumnHelper<Person>();
 
-const BorrowTable = () => {
+const BorrowTable: React.FC<BorrowTableProps> = ({ openModal, setOpenModal, setRepayModal }) => {
     const defaultData: Person[] = [
         {
             amount: 647,
@@ -71,11 +76,13 @@ const BorrowTable = () => {
         }),
         columnHelper.accessor('withdrawBtn', {
             header: () => <span></span>,
-            cell: (info) => <span><Button label="Withdraw" className='bg-primary text-xs' /></span>
+            cell: (info) => <span><Button label="Repay" className='bg-primary text-xs' onClick={() => {
+                setRepayModal(true)
+            }} /></span>
         }),
         columnHelper.accessor('supplyBtn', {
             header: () => <span></span>,
-            cell: (info) => <span><Button label="Supply" className='text-xs border border-purple-500 hover:opacity-50 hover:bg-primary transition-all duration-500 ease-out' /></span>
+            cell: (info) => <span><Button label="Borrow" className='text-xs border border-purple-500 hover:opacity-50 hover:bg-primary transition-all duration-500 ease-out' onClick={() => setOpenModal(true)} /></span>
         }),
     ];
     return <Table columns={columns} data={defaultData} />;

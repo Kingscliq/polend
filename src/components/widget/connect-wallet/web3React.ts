@@ -13,7 +13,7 @@ const POLLING_INTERVAL = 12000;
 // const rpcUrl = getNodeUrl();
 const rpcUrl = "https://mainnet.infura.io/v3/007a9f0a933c4e03b5ab7cc9ad4928cb";
 
-const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
+const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42, 80001] });
 const walletconnect = new WalletConnectConnector({
     rpcUrl: rpcUrl,
     bridge: "https://bridge.walletconnect.org",
@@ -27,7 +27,7 @@ const bloctoConnector = new BloctoConnector({ chainId: CHAIN_ID, rpc: rpcUrl } a
 const walletLinkConnector = new WalletLinkConnector({
     rpc: rpcUrl,
     appName: "Polend",
-    supportedChainIds: [1, 3, 4, 5, 42],
+    supportedChainIds: [1, 3, 4, 5, 42, 80001],
     url: `https://mainnet.infura.io/v3/007a9f0a933c4e03b5ab7cc9ad4928cb`,
 } as any);
 

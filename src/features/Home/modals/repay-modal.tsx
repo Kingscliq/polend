@@ -6,9 +6,11 @@ import CustomTextField from '../components/CustomTextField';
 interface SupplyModalProps {
     openModal: boolean;
     setOpenModal: React.Dispatch<SetStateAction<boolean>>
+    repayAmount: number | string;
+    setRepayAmount: React.Dispatch<SetStateAction<string | number>>
 }
 
-const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal }) => {
+const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, repayAmount, setRepayAmount }) => {
     return (
         <Modal
             title="Repay"
@@ -16,7 +18,7 @@ const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal }) => 
             modalBody={
                 <div className='my-5 text-white/75'>
                     <div>
-                        <CustomTextField label='Amount' placeholder='$0.00' />
+                        <CustomTextField label='Amount' placeholder='$0.00' value={repayAmount} onChange={(e) => setRepayAmount(e.target.value)} />
                     </div>
                     <div className='my-8'>
                         <h3 className='mb-2'>Transaction Summary</h3>

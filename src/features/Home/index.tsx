@@ -4,16 +4,11 @@ import {
 } from '../../assets/icons';
 import { chartBall } from '../../assets/images';
 import Card from '../../components/elements/Card';
-
 import Header from './components/Header';
 import { useLanguage, useLanguageActions } from '@hooks/useLanguage';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { circulationSupply } from './api';
 import { CONTRACT_ADDRESS } from '@config/constants';
 import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
-import { getTvl } from '@features/Home/api';
 import WalletConnector from '@components/widget/connect-wallet/wallet-connector';
 import PolendAbi from '@config/abi/PolendAbi.json';
 import SupplyTable from './table/SuppliesTable';
@@ -23,6 +18,7 @@ import BorrowModal from './modals/borrow-modal';
 import RepayModal from './modals/repay-modal';
 import WithdrawModal from './modals/withdraw-modal';
 import StatCard from './components/StatsCard';
+import AssetsTable from './table/Assets';
 
 const Home = () => {
   const { language } = useLanguage();
@@ -33,6 +29,11 @@ const Home = () => {
   const [borrowModal, setBorrowModal] = useState<boolean>(false)
   const [repayModal, setRepayModal] = useState<boolean>(false)
   const [withdrawModal, setWithdrawModal] = useState<boolean>(false)
+  const [supplyAmount, setSupplyAmount] = useState<number | string>("")
+  const [withdrawAmount, setWithdrawAmount] = useState<number | string>("")
+  const [borrowAmount, setBorrowAmount] = useState<number | string>("")
+  const [repayAmount, setRepayAmount] = useState<number | string>("")
+  const [supplyLoading, setSupplyLoading] = useState<boolean>(false)
 
   // Get Balance
   const getBalance = useCallback(async () => {
@@ -51,14 +52,16 @@ const Home = () => {
     }
   }, [address, provider]);
 
-  const { data: tifiCirculationSupply, isLoading } = useQuery(
-    ['tifi-circulation-supply'],
-    circulationSupply,
-  );
-  const { data: tvl, isLoading: isTvlLoading } = useQuery(['tvl-data'], getTvl);
   // const { data: holders, isLoading: isHolderLoading } = useQuery(['hold-data'], getTotalHolders);
 
+  console.log(borrowAmount)
 
+  const handleDeposit = () => {
+    setSupplyLoading(true)
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
+
+    console.log(contract)
+  }
   const getUserAccount = useCallback(async () => {
     // setLoading(true);
     try {
@@ -67,64 +70,38 @@ const Home = () => {
         PolendAbi,
         provider.getSigner(),
       );
-      const resp = await contract.getUserAccount(address);
-      const collateralValue = Number(
-        ethers.utils.formatEther(resp.totalCollateralBalanceBase),
-      );
-      const borrowValue = Number(
-        ethers.utils.formatEther(resp.totalBorrowBalanceBase),
-      );
+      // console.log({ CONTRACT_ADDRESS }, { provider }, { address }, { contract })
+      const addr = await contract.getPrice();
+      const price = ethers.utils.formatEther(addr._hex)
+      console.log({ addr }, { price })
+      const resp = await contract.loanDets(address);
 
-      const infoData = {
-        totalLiquidity: ethers.utils.formatEther(
-          resp.totalLiquidityBalanceBase,
-        ),
-        maxBorrow: collateralValue,
-        curBorrow: borrowValue,
-        healthLevel:
-          borrowValue > 0 && collateralValue / borrowValue < 4
-            ? Math.floor(collateralValue / borrowValue)
-            : 4,
-        address: address,
-      };
+      console.log(resp)
+      // const collateralValue = Number(
+      //   ethers.utils.formatEther(resp.loanDets()),
+      // );
 
-      // setUserInfo(infoData);
+      // const infoData = {
+      //   totalLiquidity: ethers.utils.formatEther(
+      //     resp.totalLiquidityBalanceBase,
+      //   ),
+      //   maxBorrow: collateralValue,
+      //   curBorrow: borrowValue,
+      //   healthLevel:
+      //     borrowValue > 0 && collateralValue / borrowValue < 4
+      //       ? Math.floor(collateralValue / borrowValue)
+      //       : 4,
+      //   address: address,
+      // };
 
-      // const p = TOKENS.filter((item) => item.hasLendingPool).map((token) => [
-      //   token,
-      //   contract.getPool(token.address),
-      //   contract.getUserPoolData(address, token.address),
-      // ]);
-      // let temp = [];
-      // for (let i = 0; i < p.length; i++) {
-      //   let res1 = await p[i][1];
-      //   let res2 = await p[i][2];
-      //   let tl = Number(ethers.utils.formatEther(res1.totalLiquidity)),
-      //     tb = Number(ethers.utils.formatEther(res1.totalBorrows));
-      //   temp.push({
-      //     token: p[i][0].title,
-      //     address: p[i][0].address,
-      //     lendRate: Number(ethers.utils.formatEther(res1.lendRate)),
-      //     borrowRate: Number(ethers.utils.formatEther(res1.borrowRate)),
-      //     stAddress: res1.shareTokenAddress,
-      //     available: tl > tb ? tl - tb : 0, // Availabel to borrow
-      //     total: tl,
-      //     borrowed: Number(
-      //       ethers.utils.formatEther(res2.compoundedBorrowBalance),
-      //     ),
-      //     lent: Number(
-      //       ethers.utils.formatEther(res2.compoundedLiquidityBalance),
-      //     ),
-      //     // collateralEnabled: res2.userUsePoolAsCollateral,
-      //   });
-      // }
-      // setRows(temp);
     } catch (error: any) {
       // const accountError = error?.error ? error.error : getErrorMessage(error);
       // setAlert({
       //   message: accountError,
       //   type: 'error',
       //   url: { link: '', text: '' },
+
+      console.log(error)
       // });
     }
     // setLoading(false);
@@ -137,6 +114,7 @@ const Home = () => {
   useEffect(() => {
     if (address && provider) {
       getBalance();
+      getUserAccount()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, provider]);
@@ -156,10 +134,10 @@ const Home = () => {
 
   return (
     <section className="py-8 relative">
-      {supplyModal && <SupplyModal openModal={supplyModal} setOpenModal={setSupplyModal} />}
-      {borrowModal && <BorrowModal openModal={borrowModal} setOpenModal={setBorrowModal} />}
-      {repayModal && <RepayModal openModal={repayModal} setOpenModal={setRepayModal} />}
-      {withdrawModal && <WithdrawModal openModal={withdrawModal} setOpenModal={setWithdrawModal} />}
+      {supplyModal && <SupplyModal openModal={supplyModal} setOpenModal={setSupplyModal} supplyAmount={supplyAmount} setSupplyAmount={setSupplyAmount} />}
+      {borrowModal && <BorrowModal openModal={borrowModal} setOpenModal={setBorrowModal} borrowAmount={borrowAmount} setBorrowAmount={setBorrowAmount} />}
+      {repayModal && <RepayModal openModal={repayModal} setOpenModal={setRepayModal} repayAmount={repayAmount} setRepayAmount={setRepayAmount} />}
+      {withdrawModal && <WithdrawModal openModal={withdrawModal} setOpenModal={setWithdrawModal} withdrawAmount={withdrawAmount} setWithdrawAmount={setWithdrawAmount} />}
 
       <div className="absolute -z-30 top-8 lg:right-0 lg:top-0 lg:opacity-100 opacity-20">
         <img src={chartBall} alt="ChatBall" />
@@ -193,7 +171,7 @@ const Home = () => {
                       <WalletConnector />
                     ) : (
                       <StatCard
-                        loading={isLoading || isTvlLoading}
+                        loading={false}
                         title={st.title}
                         desc={st?.value as string}
                       />
@@ -258,8 +236,16 @@ const Home = () => {
                 </div>
               </div>
               <div className='mt-6'>
-                <BorrowTable />
+                <BorrowTable openModal={supplyModal} setOpenModal={setBorrowModal} setRepayModal={setRepayModal} />
               </div>
+            </Card>
+          </div>
+          <div className='mt-6'>
+            <Card className='w-full bg-dark-grey'>
+              <div className='text-white mb-4'>
+                <h3 className='text-xl font-bold'>Assets</h3>
+              </div>
+              <AssetsTable openModal={borrowModal} setOpenModal={setBorrowModal} />
             </Card>
           </div>
         </section>
