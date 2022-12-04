@@ -33,8 +33,9 @@ export const WalletButton = ({
         alt="Wallet connect icon"
       />
       <span
-        className={`capitalize text-sm mt-3 block whitespace-normal ${disabled ? 'text-neutral-black-0' : 'text-white'
-          }`}
+        className={`capitalize text-sm mt-3 block whitespace-normal ${
+          disabled ? 'text-neutral-black-0' : 'text-white'
+        }`}
       >
         {label}
       </span>

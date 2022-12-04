@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  wallet,
-} from '../../assets/icons';
+import { wallet } from '../../assets/icons';
 import { chartBall } from '../../assets/images';
 import Card from '../../components/elements/Card';
 import Header from './components/Header';
 import { useLanguage, useLanguageActions } from '@hooks/useLanguage';
-import { CONTRACT_ADDRESS } from '@config/constants';
+import { CONTRACT_ADDRESS, SCAN_URL } from '@config/constants';
 import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core';
 import WalletConnector from '@components/widget/connect-wallet/wallet-connector';
@@ -19,24 +17,29 @@ import RepayModal from './modals/repay-modal';
 import WithdrawModal from './modals/withdraw-modal';
 import StatCard from './components/StatsCard';
 import AssetsTable from './table/Assets';
-import { extendToBigNumber } from '@utils/converters';
 import { useAlertActions } from '@hooks/useAlert';
+import { getErrorMessage } from '@utils/formatters';
+import { extendToBigNumber } from '@utils/converters';
 
 const Home = () => {
+  const { setAlert } = useAlertActions();
   const { language } = useLanguage();
   const { setLanguage } = useLanguageActions();
   const [balance, setBalance] = useState<number>(0);
   const { account: address, library: provider } = useWeb3React();
-  const [supplyModal, setSupplyModal] = useState<boolean>(false)
-  const [borrowModal, setBorrowModal] = useState<boolean>(false)
-  const [repayModal, setRepayModal] = useState<boolean>(false)
-  const [withdrawModal, setWithdrawModal] = useState<boolean>(false)
-  const [supplyAmount, setSupplyAmount] = useState<number | string>("")
-  const [withdrawAmount, setWithdrawAmount] = useState<number | string>("")
-  const [borrowAmount, setBorrowAmount] = useState<number | string>("")
-  const [repayAmount, setRepayAmount] = useState<number | string>("")
-  const [supplyLoading, setSupplyLoading] = useState<boolean>(false)
+  const [supplyModal, setSupplyModal] = useState<boolean>(false);
+  const [borrowModal, setBorrowModal] = useState<boolean>(false);
+  const [repayModal, setRepayModal] = useState<boolean>(false);
+  const [withdrawModal, setWithdrawModal] = useState<boolean>(false);
+  const [supplyAmount, setSupplyAmount] = useState<number | string>('');
+  const [withdrawAmount, setWithdrawAmount] = useState<number | string>('');
+  const [borrowAmount, setBorrowAmount] = useState<number | string>('');
+  const [repayAmount, setRepayAmount] = useState<number | string>('');
   const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
+
+  // loading states
+  const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
+  const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
 
   // Get Balance
   const getBalance = useCallback(async () => {
@@ -57,24 +60,58 @@ const Home = () => {
 
   // const { data: holders, isLoading: isHolderLoading } = useQuery(['hold-data'], getTotalHolders);
 
-  console.log(borrowAmount)
+  console.log(borrowAmount);
 
-  const handleDeposit = () => {
-    setSupplyLoading(true)
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
-    console.log(contract)
-  }
+  const handleSupply = async () => {
+    setSupplyLoading(true);
+    try {
+      const contract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        PolendAbi,
+        provider.getSigner(),
+      );
+
+      const tx = await contract.deposit(extendToBigNumber(supplyAmount));
+
+      // setAlert({
+      //   message: 'Transaction Submitted!',
+      //   type: 'notice',
+      //   url: {
+      //     link: `${SCAN_URL}/tx/${tx.hash}`,
+      //     text: 'Check Transaction on BSCScan',
+      //   },
+      // });
+
+      setSupplyModal(false);
+      setSupplyLoading(false);
+      console.log({ tx });
+    } catch (error: any) {
+      setSupplyLoading(false);
+      setSupplyModal(false);
+      console.log(error);
+      const suppleError = error?.error
+        ? error.error.data.message
+        : getErrorMessage(error.error.code);
+
+      setAlert({
+        message: suppleError,
+        type: 'error',
+        url: {
+          link: '',
+          text: '',
+        },
+      });
+    }
+  };
 
   const handleBorrow = async () => {
     setSupplyLoading(true)
     const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
 
-    
-
     try {
       if (address != null) {
         const tx = await contract.borrow(extendToBigNumber(borrowAmount))
-        
+
       } else {
         return 0;
       }
@@ -82,6 +119,20 @@ const Home = () => {
       return 0;
     }
   }
+  const handleWithdraw = async () => {
+    setWithdrawLoading(true);
+
+    try {
+      const contract = new ethers.Contract(
+        CONTRACT_ADDRESS,
+        PolendAbi,
+        provider.getSigner(),
+      );
+      const tx = await contract.withdraw(extendToBigNumber(withdrawAmount));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getUserAccount = useCallback(async () => {
     // setLoading(true);
@@ -93,11 +144,11 @@ const Home = () => {
       );
       // console.log({ CONTRACT_ADDRESS }, { provider }, { address }, { contract })
       const addr = await contract.getPrice();
-      const price = ethers.utils.formatEther(addr._hex)
-      console.log({ addr }, { price })
+      const price = ethers.utils.formatEther(addr._hex);
+      console.log({ addr, price });
       const resp = await contract.loanDets(address);
 
-      console.log(resp)
+      console.log(resp);
       // const collateralValue = Number(
       //   ethers.utils.formatEther(resp.loanDets()),
       // );
@@ -114,7 +165,6 @@ const Home = () => {
       //       : 4,
       //   address: address,
       // };
-
     } catch (error: any) {
       // const accountError = error?.error ? error.error : getErrorMessage(error);
       // setAlert({
@@ -122,7 +172,7 @@ const Home = () => {
       //   type: 'error',
       //   url: { link: '', text: '' },
 
-      console.log(error)
+      console.log(error);
       // });
     }
     // setLoading(false);
@@ -135,7 +185,7 @@ const Home = () => {
   useEffect(() => {
     if (address && provider) {
       getBalance();
-      getUserAccount()
+      getUserAccount();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, provider]);
@@ -155,10 +205,42 @@ const Home = () => {
 
   return (
     <section className="py-8 relative">
-      {supplyModal && <SupplyModal openModal={supplyModal} setOpenModal={setSupplyModal} supplyAmount={supplyAmount} setSupplyAmount={setSupplyAmount} />}
-      {borrowModal && <BorrowModal openModal={borrowModal} setOpenModal={setBorrowModal} borrowAmount={borrowAmount} setBorrowAmount={setBorrowAmount} />}
-      {repayModal && <RepayModal openModal={repayModal} setOpenModal={setRepayModal} repayAmount={repayAmount} setRepayAmount={setRepayAmount} />}
-      {withdrawModal && <WithdrawModal openModal={withdrawModal} setOpenModal={setWithdrawModal} withdrawAmount={withdrawAmount} setWithdrawAmount={setWithdrawAmount} />}
+      {supplyModal && (
+        <SupplyModal
+          openModal={supplyModal}
+          setOpenModal={setSupplyModal}
+          supplyAmount={supplyAmount}
+          setSupplyAmount={setSupplyAmount}
+          handleSupply={handleSupply}
+          supplyLoading={supplyLoading}
+        />
+      )}
+      {borrowModal && (
+        <BorrowModal
+          openModal={borrowModal}
+          setOpenModal={setBorrowModal}
+          borrowAmount={borrowAmount}
+          setBorrowAmount={setBorrowAmount}
+        />
+      )}
+      {repayModal && (
+        <RepayModal
+          openModal={repayModal}
+          setOpenModal={setRepayModal}
+          repayAmount={repayAmount}
+          setRepayAmount={setRepayAmount}
+        />
+      )}
+      {withdrawModal && (
+        <WithdrawModal
+          openModal={withdrawModal}
+          setOpenModal={setWithdrawModal}
+          withdrawAmount={withdrawAmount}
+          setWithdrawAmount={setWithdrawAmount}
+          handleWithdraw={handleWithdraw}
+          withdrawLoading={withdrawLoading}
+        />
+      )}
 
       <div className="absolute -z-30 top-8 lg:right-0 lg:top-0 lg:opacity-100 opacity-20">
         <img src={chartBall} alt="ChatBall" />
@@ -204,74 +286,105 @@ const Home = () => {
         </section>
       )}
       {!address && (
-        <section className='m-auto w-full lg:w-[580px] bg-tifi-dark text-tifi-light-grey h-auto flex items-center justify-center flex-col py-6'>
-          <div className='h-20 w-20 rounded-full'>
+        <section className="m-auto w-full lg:w-[580px] bg-tifi-dark text-tifi-light-grey h-auto flex items-center justify-center flex-col py-6">
+          <div className="h-20 w-20 rounded-full">
             <img src={wallet} alt="Wallet connect notice" />
           </div>
-          <div className='mb-4'>
-
-            <h2 className='text-xl font-medium text-center mb-2'>Please, connect your wallet</h2>
-            <p className='text-xs text-center text-tifi-grey'>Please connect your wallet to see your supplies, borrowings, and open positions.</p>
+          <div className="mb-4">
+            <h2 className="text-xl font-medium text-center mb-2">
+              Please, connect your wallet
+            </h2>
+            <p className="text-xs text-center text-tifi-grey">
+              Please connect your wallet to see your supplies, borrowings, and
+              open positions.
+            </p>
           </div>
           <div>
             <WalletConnector />
           </div>
         </section>
-      )
-      }
+      )}
       {address && (
         <section className="">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 w-full">
-            <Card className='w-full bg-dark-grey'>
-              <div className='text-white mb-4'>
-                <h3 className='text-xl font-bold'>Your Supplies</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full">
+            <Card className="w-full bg-dark-grey">
+              <div className="text-white mb-4">
+                <h3 className="text-xl font-bold">Your Supplies</h3>
               </div>
-              <div className='flex items-center'>
-                <div className='border-purple-300/30 border p-1'>
-                  <span className='font-medium text-sm text-tifi-grey'>Balance</span> <span className='text-white'>$200</span>
+              <div className="flex items-center">
+                <div className="border-purple-300/30 border p-1">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    Balance
+                  </span>{' '}
+                  <span className="text-white">$200</span>
                 </div>
-                <div className='border-purple-300/30 border p-1 ml-3'>
-                  <span className='font-medium text-sm text-tifi-grey'>APY</span> <span className='text-white'>{"< "}0.01%</span>
+                <div className="border-purple-300/30 border p-1 ml-3">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    APY
+                  </span>{' '}
+                  <span className="text-white">{'< '}0.01%</span>
                 </div>
-                <div className='border-purple-300/30 border p-1 ml-3'>
-                  <span className='font-medium text-sm text-tifi-grey'>Collateral</span> <span className='text-white'>$200</span>
+                <div className="border-purple-300/30 border p-1 ml-3">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    Collateral
+                  </span>{' '}
+                  <span className="text-white">$200</span>
                 </div>
               </div>
-              <div className='mt-6'>
-                <SupplyTable openModal={supplyModal} setOpenModal={setSupplyModal} setWithdrawModal={setWithdrawModal} />
+              <div className="mt-6">
+                <SupplyTable
+                  openModal={supplyModal}
+                  setOpenModal={setSupplyModal}
+                  setWithdrawModal={setWithdrawModal}
+                />
               </div>
             </Card>
-            <Card className='w-full bg-dark-grey'>
-              <div className='text-white mb-4'>
-                <h3 className='text-xl font-bold'>Your Borrows</h3>
+            <Card className="w-full bg-dark-grey">
+              <div className="text-white mb-4">
+                <h3 className="text-xl font-bold">Your Borrows</h3>
               </div>
-              <div className='flex items-center'>
-                <div className='border-purple-300/30 border p-1'>
-                  <span className='font-medium text-sm text-tifi-grey'>Balance</span> <span className='text-white'>$200</span>
+              <div className="flex items-center">
+                <div className="border-purple-300/30 border p-1">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    Balance
+                  </span>{' '}
+                  <span className="text-white">$200</span>
                 </div>
-                <div className='border-purple-300/30 border p-1 ml-3'>
-                  <span className='font-medium text-sm text-tifi-grey'>APY</span> <span className='text-white'>{"< "}0.01%</span>
+                <div className="border-purple-300/30 border p-1 ml-3">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    APY
+                  </span>{' '}
+                  <span className="text-white">{'< '}0.01%</span>
                 </div>
-                <div className='border-purple-300/30 border p-1 ml-3'>
-                  <span className='font-medium text-sm text-tifi-grey'>Collateral</span> <span className='text-white'>$200</span>
+                <div className="border-purple-300/30 border p-1 ml-3">
+                  <span className="font-medium text-sm text-tifi-grey">
+                    Collateral
+                  </span>{' '}
+                  <span className="text-white">$200</span>
                 </div>
               </div>
-              <div className='mt-6'>
-                <BorrowTable openModal={supplyModal} setOpenModal={setBorrowModal} setRepayModal={setRepayModal} />
+              <div className="mt-6">
+                <BorrowTable
+                  openModal={supplyModal}
+                  setOpenModal={setBorrowModal}
+                  setRepayModal={setRepayModal}
+                />
               </div>
             </Card>
           </div>
-          <div className='mt-6'>
-            <Card className='w-full bg-dark-grey'>
-              <div className='text-white mb-4'>
-                <h3 className='text-xl font-bold'>Assets</h3>
+          <div className="mt-6">
+            <Card className="w-full bg-dark-grey">
+              <div className="text-white mb-4">
+                <h3 className="text-xl font-bold">Assets</h3>
               </div>
-              <AssetsTable openModal={borrowModal} setOpenModal={setBorrowModal} />
+              <AssetsTable
+                openModal={borrowModal}
+                setOpenModal={setBorrowModal}
+              />
             </Card>
           </div>
         </section>
       )}
-
     </section>
   );
 };

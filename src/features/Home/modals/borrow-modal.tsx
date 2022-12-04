@@ -1,6 +1,6 @@
 import Button from '@components/elements/Button';
-import Modal from '@components/elements/Modal'
-import React, { SetStateAction } from 'react'
+import Modal from '@components/elements/Modal';
+import React, { SetStateAction } from 'react';
 import CustomTextField from '../components/CustomTextField';
 
 interface BorrowModalProps {
@@ -43,7 +43,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borr
                 </div>
             }
         />
-    )
-}
+    );
+};
 
-export default BorrowModal
+export default BorrowModal;
