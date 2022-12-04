@@ -8,9 +8,9 @@ export interface AlertState {
 }
 
 const initialState: AlertState = {
-    type: 'success',
-    message: 'This is a smaple message',
-    url: { text: 'Hey', link: 'https://bscan.com' }
+    type: '',
+    message: '',
+    url: { text: '', link: '' }
 }
 
 export const AlertSlice = createSlice({
