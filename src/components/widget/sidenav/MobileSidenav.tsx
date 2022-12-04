@@ -4,21 +4,9 @@ import {
   close,
   homeActive,
   homeBase,
-  hotIcon,
   lendingBase,
-  liquidityActive,
-  liquidityBase,
   logo,
-  lotteryBase,
-  portfolioActive,
-  portfolioBase,
-  stakingActive,
-  stakingBase,
-  swapActive,
-  swapBase,
-  trending,
 } from '../../../assets/icons';
-import AllVerse from '../allverse';
 import { useLocation } from 'react-router-dom';
 import Socials from '../socials';
 
@@ -56,57 +44,11 @@ const MobileSideNav = ({ openNav, setOpenNav }: any) => {
           <div className="mb-2">
             <SidebarMenuItem
               onClick={setOpenNav}
-              baseIcon={swapBase}
-              activeIcon={swapActive}
-              title="Swap"
-              url="/swap"
-              active={location.pathname === '/swap'}
-            />
-          </div>
-
-          <div className="mb-2">
-            <SidebarMenuItem
-              onClick={setOpenNav}
-              baseIcon={stakingBase}
-              activeIcon={stakingActive}
-              title="Stake"
-              url="/stake"
-              active={location.pathname === '/stake'}
-              optionalIcon={hotIcon}
-            />
-          </div>
-
-          <div className="mb-2">
-            <SidebarMenuItem
-              onClick={setOpenNav}
-              baseIcon={liquidityBase}
-              activeIcon={liquidityActive}
-              title="Liquidity"
-              url="/liquidity"
-              active={location.pathname === '/liquidity'}
-              optionalIcon={trending}
-            />
-          </div>
-
-          <div className="mb-2">
-            <SidebarMenuItem
-              onClick={setOpenNav}
-              baseIcon={portfolioBase}
-              activeIcon={portfolioActive}
-              title="Portfolio"
-              url="/portfolio_pool"
-              active={location.pathname === '/portfolio_pool'}
-            />
-          </div>
-
-          <div className="mb-2">
-            <SidebarMenuItem
-              onClick={setOpenNav}
-              baseIcon={lotteryBase}
-              activeIcon={lotteryBase}
-              title="Lottery"
-              url="/lottery"
-              active={location.pathname === '/lottery'}
+              baseIcon={lendingBase}
+              activeIcon={lendingBase}
+              title="Market"
+              url="/market"
+              active={location.pathname === '/market'}
             />
           </div>
 
@@ -115,18 +57,15 @@ const MobileSideNav = ({ openNav, setOpenNav }: any) => {
               onClick={setOpenNav}
               baseIcon={lendingBase}
               activeIcon={lendingBase}
-              title="Loan"
-              url="/loan"
-              active={location.pathname === '/loan'}
+              title="Learn More"
+              url="/learn-more"
+              active={location.pathname === '/learn-more'}
             />
           </div>
         </aside>
 
         <div className="mt-auto">
-          <AllVerse />
-          <div className="my-5">
-            <Socials />
-          </div>
+          <Socials />
         </div>
       </div>
 
