@@ -33,8 +33,9 @@ export const WalletButton = ({
         alt="Wallet connect icon"
       />
       <span
-        className={`capitalize text-sm mt-3 block whitespace-normal ${disabled ? 'text-neutral-black-0' : 'text-white'
-          }`}
+        className={`capitalize text-sm mt-3 block whitespace-normal ${
+          disabled ? 'text-neutral-black-0' : 'text-white'
+        }`}
       >
         {label}
       </span>
@@ -82,8 +83,6 @@ const WalletConnector: React.FC<{ label?: string }> = ({ label }) => {
           title="Connect Wallet"
           modalBody={
             <>
-
-
               <div className="mt-10 grid grid-cols-3 lg:grid-cols-4 gap-8">
                 {connectors_data?.map((item) => (
                   <WalletButton
