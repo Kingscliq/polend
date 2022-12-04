@@ -26,6 +26,8 @@ const Home = () => {
   const { language } = useLanguage();
   const { setLanguage } = useLanguageActions();
   const [balance, setBalance] = useState<number>(0);
+  const [collateralAmount, setCollateralAmount] = useState<number>(0);
+  const [debtAmount, setDebtAmount] = useState<number>(0);
   const { account: address, library: provider } = useWeb3React();
   const [supplyModal, setSupplyModal] = useState<boolean>(false);
   const [borrowModal, setBorrowModal] = useState<boolean>(false);
@@ -35,30 +37,13 @@ const Home = () => {
   const [withdrawAmount, setWithdrawAmount] = useState<number | string>('');
   const [borrowAmount, setBorrowAmount] = useState<number | string>('');
   const [repayAmount, setRepayAmount] = useState<number | string>('');
+  const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
 
   // loading states
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
 
-  const getPrice = async () => {
-    const contract = new ethers.Contract(
-      CONTRACT_ADDRESS,
-      PolendAbi,
-      provider.getSigner(),
-    );
-    try {
-      const response = await contract.getPrice();
-      const price = ethers.utils.formatEther(response._hex);
-      setBalance(Number(price));
-      const resp = await contract.loanDets(address);
-      console.log(resp);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  console.log({ balance });
-
+  console.log(supplyAmount)
   const handleSupply = async () => {
     setSupplyLoading(true);
     try {
@@ -68,23 +53,33 @@ const Home = () => {
         provider.getSigner(),
       );
 
-      const tx = await contract.deposit(extendToBigNumber(supplyAmount));
+      const tx = await contract.deposit(extendToBigNumber(supplyAmount), { value: ethers.utils.parseEther(supplyAmount.toString()) });
 
-      // setAlert({
-      //   message: 'Transaction Submitted!',
-      //   type: 'notice',
-      //   url: {
-      //     link: `${SCAN_URL}/tx/${tx.hash}`,
-      //     text: 'Check Transaction on BSCScan',
-      //   },
-      // });
+      setAlert({
+        message: 'Transaction Submitted!',
+        type: 'notice',
+        url: {
+          link: `${SCAN_URL}/tx/${tx.hash}`,
+          text: 'Check Transaction on BSCScan',
+        },
+      });
 
-      setSupplyModal(false);
-      setSupplyLoading(false);
-      console.log({ tx });
+
+      tx.wait()
+
+      console.log(`${SCAN_URL}/tx/${tx.hash}`)
+      setAlert({
+        message: 'Transaction Succesful!',
+        type: 'notice',
+        url: {
+          link: `${SCAN_URL}/tx/${tx.hash}`,
+          text: 'Check Transaction on BSCScan',
+        },
+      });
+
     } catch (error: any) {
       setSupplyLoading(false);
-      setSupplyModal(false);
+
       console.log(error);
       const suppleError = error?.error
         ? error.error.data.message
@@ -101,6 +96,21 @@ const Home = () => {
     }
   };
 
+  const handleBorrow = async () => {
+    setSupplyLoading(true)
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
+
+    try {
+      if (address != null) {
+        const tx = await contract.borrow(extendToBigNumber(borrowAmount))
+
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      return 0;
+    }
+  }
   const handleWithdraw = async () => {
     setWithdrawLoading(true);
 
@@ -132,46 +142,32 @@ const Home = () => {
   };
 
   const getUserAccount = useCallback(async () => {
-    // setLoading(true);
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      PolendAbi,
+      provider.getSigner(),
+    );
     try {
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        PolendAbi,
-        provider.getSigner(),
-      );
-      // console.log({ CONTRACT_ADDRESS }, { provider }, { address }, { contract })
-      const addr = await contract.getPrice();
-      const price = ethers.utils.formatEther(addr._hex);
-      console.log({ addr, price });
+      const response = await contract.getPrice();
+      const price = ethers.utils.formatEther(response._hex);
+      setBalance(Number(price));
+
       const resp = await contract.loanDets(address);
-      // const collateralValue = Number(
-      //   ethers.utils.formatEther(resp.loanDets()),
-      // );
+      const collateralAmount = ethers.utils.formatEther(
+        resp?.collateralAmount._hex,
+      );
+      setCollateralAmount(Number(collateralAmount));
 
-      // const infoData = {
-      //   totalLiquidity: ethers.utils.formatEther(
-      //     resp.totalLiquidityBalanceBase,
-      //   ),
-      //   maxBorrow: collateralValue,
-      //   curBorrow: borrowValue,
-      //   healthLevel:
-      //     borrowValue > 0 && collateralValue / borrowValue < 4
-      //       ? Math.floor(collateralValue / borrowValue)
-      //       : 4,
-      //   address: address,
-      // };
-    } catch (error: any) {
-      // const accountError = error?.error ? error.error : getErrorMessage(error);
-      // setAlert({
-      //   message: accountError,
-      //   type: 'error',
-      //   url: { link: '', text: '' },
+      const debt = ethers.utils.formatEther(resp?.debt._hex);
+      setDebtAmount(Number(debt));
 
+      const coin = ethers.utils.formatEther(resp?.coin);
+
+      console.log({ coin, collateralAmount, debt });
+    } catch (error) {
       console.log(error);
-      // });
     }
-    // setLoading(false);
-  }, [provider, address]);
+  }, [address, provider]);
 
   useEffect(() => {
     setLanguage({ language: language });
@@ -180,7 +176,6 @@ const Home = () => {
   useEffect(() => {
     if (address && provider) {
       getUserAccount();
-      getPrice();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, provider]);
@@ -194,7 +189,7 @@ const Home = () => {
     // {
     //   id: 2,
     //   title: 'Net APY',
-    //   value: `$${tvl?.stakes && toFixed(tvl.stakes[0].tvl / 1000000, 4)}M`,
+    //   value: `$${ tvl?.stakes && toFixed(tvl.stakes[0].tvl / 1000000, 4)}M`,
     // },
   ];
 
@@ -261,10 +256,9 @@ const Home = () => {
                 stats.map((st, idx) => (
                   <div
                     key={st.id}
-                    className={`${
-                      stats.length - 1 !== idx &&
+                    className={`${stats.length - 1 !== idx &&
                       'lg:border-r lg:border-r-light-60'
-                    } ${idx === stats.length - 1 && `ml-4`} lg:pl-4 pr-4`}
+                      } ${idx === stats.length - 1 && `ml-4`} lg: pl - 4 pr - 4`}
                   >
                     {!address ? (
                       <WalletConnector />
@@ -312,7 +306,9 @@ const Home = () => {
                   <span className="font-medium text-sm text-tifi-grey">
                     Balance
                   </span>{' '}
-                  <span className="text-white">${balance}</span>
+                  <span className="text-white">
+                    ${collateralAmount - debtAmount}
+                  </span>
                 </div>
                 <div className="border-purple-300/30 border p-1 ml-3">
                   <span className="font-medium text-sm text-tifi-grey">
@@ -324,7 +320,7 @@ const Home = () => {
                   <span className="font-medium text-sm text-tifi-grey">
                     Collateral
                   </span>{' '}
-                  <span className="text-white">${balance}</span>
+                  <span className="text-white">${collateralAmount}</span>
                 </div>
               </div>
               <div className="mt-6">
@@ -341,23 +337,17 @@ const Home = () => {
                 <h3 className="text-xl font-bold">Your Borrows</h3>
               </div>
               <div className="flex items-center">
-                <div className="border-purple-300/30 border p-1">
+                <div className="border-purple-300/30 border p-1 mr-3">
                   <span className="font-medium text-sm text-tifi-grey">
-                    Balance
+                    Debt
                   </span>{' '}
-                  <span className="text-white">$200</span>
+                  <span className="text-white">${debtAmount}</span>
                 </div>
-                <div className="border-purple-300/30 border p-1 ml-3">
+                <div className="border-purple-300/30 border p-1">
                   <span className="font-medium text-sm text-tifi-grey">
                     APY
                   </span>{' '}
                   <span className="text-white">{'< '}0.01%</span>
-                </div>
-                <div className="border-purple-300/30 border p-1 ml-3">
-                  <span className="font-medium text-sm text-tifi-grey">
-                    Collateral
-                  </span>{' '}
-                  <span className="text-white">$200</span>
                 </div>
               </div>
               <div className="mt-6">

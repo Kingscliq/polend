@@ -73,7 +73,7 @@ const CustomTextField: React.FC<TextFieldProps> = ({
                             />
                         </div>
                         <div className='ml-3 col-span-1'>
-                            ETH
+                            MATIC
                         </div>
                     </div>
                     <div className='flex items-center justify-between text-purple-100'>
