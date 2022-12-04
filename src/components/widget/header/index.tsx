@@ -7,6 +7,7 @@ import ConnectWallet from '../connect-wallet';
 import { useWeb3React } from '@web3-react/core';
 import 'react-dropdown/style.css';
 import {
+  githubIcon,
   homeActive,
   homeBase,
   logo,
@@ -118,14 +119,20 @@ const Header = ({ openNav }: any) => {
               url="/market"
               active={location.pathname === '/market'}
             />
-            <SidebarMenuItem
-              // onClick={setOpenNav}
-              baseIcon={homeBase}
-              activeIcon={homeActive}
-              title="Learn More"
-              url="/learn-more"
-              active={location.pathname === '/learn-more'}
-            />
+
+            <div className="ml-5">
+              <a
+                href="https://github.com/Kingscliq/polend"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <img
+                  src={githubIcon}
+                  className="h-8 w-8 hover:w-10 hover:h-10 transition-all ease-in-out duration-300"
+                  alt="github icon"
+                />
+              </a>
+            </div>
           </div>
         </div>
 

@@ -50,8 +50,10 @@ import tifiJackpot from './tifi-jackpot.svg'
 import wallet from './wallet-vector.svg'
 import currencyIcon from './cusd.png'
 import matic from './matic.svg'
+import githubIcon from './github.svg'
 
 export {
+    githubIcon,
     homeActive,
     matic,
     currencyIcon,

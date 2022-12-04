@@ -37,9 +37,8 @@ const Home = () => {
   const [withdrawAmount, setWithdrawAmount] = useState<number | string>('');
   const [borrowAmount, setBorrowAmount] = useState<number | string>('');
   const [repayAmount, setRepayAmount] = useState<number | string>('');
-  const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
-  const [repayLoading, setRepayLoading] = useState<boolean>(false)
-
+  const [borrowLoading, setBorrowLoading] = useState<boolean>(false);
+  const [repayLoading, setRepayLoading] = useState<boolean>(false);
 
   // loading states
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
@@ -54,7 +53,9 @@ const Home = () => {
         provider.getSigner(),
       );
 
-      const tx = await contract.deposit(extendToBigNumber(supplyAmount), { value: ethers.utils.parseEther(supplyAmount.toString()) });
+      const tx = await contract.deposit(extendToBigNumber(supplyAmount), {
+        value: ethers.utils.parseEther(supplyAmount.toString()),
+      });
 
       setAlert({
         message: 'Transaction Submitted!',
@@ -65,17 +66,18 @@ const Home = () => {
         },
       });
 
-
-
-      setAlert({
-        message: 'Transaction Succesful!',
-        type: 'success',
-        url: {
-          link: `${SCAN_URL}/tx/${tx.hash}`,
-          text: 'Check Transaction on PolygonScan',
-        },
+      contract.on('Deposit', () => {
+        setAlert({
+          message: 'Transaction Succesful!',
+          type: 'success',
+          url: {
+            link: `${SCAN_URL}/tx/${tx.hash}`,
+            text: 'Check Transaction on PolygonScan',
+          },
+        });
+        setSupplyLoading(false);
+        setSupplyModal(false);
       });
-
     } catch (error: any) {
       setSupplyLoading(false);
       const suppleError = error?.error
@@ -94,11 +96,18 @@ const Home = () => {
   };
 
   const handleBorrow = async () => {
-    setBorrowLoading(true)
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
+    setBorrowLoading(true);
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      PolendAbi,
+      provider.getSigner(),
+    );
     try {
       if (address != null) {
-        const tx = await contract.borrow(TOKEN_ADDRESS, extendToBigNumber(borrowAmount))
+        const tx = await contract.borrow(
+          TOKEN_ADDRESS,
+          extendToBigNumber(borrowAmount),
+        );
         setAlert({
           message: 'Transaction Submitted!',
           type: 'notice',
@@ -108,13 +117,17 @@ const Home = () => {
           },
         });
 
-        setAlert({
-          message: 'Transaction Succesful!',
-          type: 'success',
-          url: {
-            link: `${SCAN_URL}/tx/${tx.hash}`,
-            text: 'Check Transaction on PolygonScan',
-          },
+        contract.on('Borrowed', () => {
+          setAlert({
+            message: 'Transaction Succesful!',
+            type: 'success',
+            url: {
+              link: `${SCAN_URL}/tx/${tx.hash}`,
+              text: 'Check Transaction on PolygonScan',
+            },
+          });
+          setBorrowLoading(false);
+          setBorrowModal(false);
         });
       }
     } catch (error: any) {
@@ -131,9 +144,8 @@ const Home = () => {
           text: '',
         },
       });
-
     }
-  }
+  };
 
   const handleWithdraw = async () => {
     setWithdrawLoading(true);
@@ -145,10 +157,31 @@ const Home = () => {
         provider.getSigner(),
       );
 
-      const tx = await contract.repay(extendToBigNumber(repayAmount));
+      const tx = await contract.withdraw(extendToBigNumber(withdrawAmount));
 
-      setWithdrawLoading(false);
+      setAlert({
+        message: 'Transaction Submitted!',
+        type: 'notice',
+        url: {
+          link: `${SCAN_URL}/tx/${tx.hash}`,
+          text: 'Check Transaction on PolygonScan',
+        },
+      });
+
+      contract.on('Withdrawn', () => {
+        setAlert({
+          message: 'Transaction Succesful!',
+          type: 'success',
+          url: {
+            link: `${SCAN_URL}/tx/${tx.hash}`,
+            text: 'Check Transaction on PolygonScan',
+          },
+        });
+        setWithdrawLoading(false);
+        setWithdrawModal(false);
+      });
     } catch (error: any) {
+      console.log(error);
       setWithdrawLoading(false);
       setWithdrawModal(false);
       const withdrawError = error?.error
@@ -175,9 +208,8 @@ const Home = () => {
     );
 
     try {
-
       if (address != null) {
-        const tx = await contract.repay(repayAmount)
+        const tx = await contract.repay(repayAmount);
 
         setAlert({
           message: 'Transaction Submitted!',
@@ -188,7 +220,7 @@ const Home = () => {
           },
         });
 
-        contract.on("Repayed", () => {
+        contract.on('Repayed', () => {
           setAlert({
             message: 'Transaction Succesful!',
             type: 'success',
@@ -197,13 +229,11 @@ const Home = () => {
               text: 'Check Transaction on PolygonScan',
             },
           });
-        })
-
-
+          setRepayLoading(false);
+        });
       }
-      setRepayModal(false)
     } catch (error: any) {
-      setRepayLoading(false)
+      setRepayLoading(false);
       const repayError = error?.error
         ? error.error.data.message
         : getErrorMessage(error.error.code);
@@ -233,15 +263,11 @@ const Home = () => {
       const collateralAmount = ethers.utils.formatEther(
         resp?.collateralAmount._hex,
       );
-      setCollateralAmount(Number(collateralAmount));
-
       const debt = ethers.utils.formatEther(resp?.debt._hex);
-      setRepayAmount(resp?.debt)
+
+      setCollateralAmount(Number(collateralAmount));
+      setRepayAmount(resp?.debt);
       setDebtAmount(Number(debt));
-
-      const coin = ethers.utils.formatEther(resp?.coin);
-
-      console.log({ coin, collateralAmount, debt });
     } catch (error) {
       console.log(error);
     }
@@ -255,14 +281,20 @@ const Home = () => {
     if (address && provider) {
       getUserAccount();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, provider]);
+  }, [
+    address,
+    provider,
+    repayAmount,
+    debtAmount,
+    collateralAmount,
+    getUserAccount,
+  ]);
 
   const stats = [
     {
       id: 1,
       title: 'Your Net Worth',
-      value: `${balance} MATIC`,
+      value: `${balance} USD`,
     },
     // {
     //   id: 2,
@@ -281,6 +313,7 @@ const Home = () => {
           setSupplyAmount={setSupplyAmount}
           handleSupply={handleSupply}
           supplyLoading={supplyLoading}
+          balance={collateralAmount}
         />
       )}
       {borrowModal && (
@@ -291,6 +324,7 @@ const Home = () => {
           setBorrowAmount={setBorrowAmount}
           loading={borrowLoading}
           handleBorrow={handleBorrow}
+          balance={collateralAmount}
         />
       )}
 
@@ -312,6 +346,7 @@ const Home = () => {
           setWithdrawAmount={setWithdrawAmount}
           handleWithdraw={handleWithdraw}
           withdrawLoading={withdrawLoading}
+          balance={collateralAmount}
         />
       )}
 
@@ -339,9 +374,10 @@ const Home = () => {
                 stats.map((st, idx) => (
                   <div
                     key={st.id}
-                    className={`${stats.length - 1 !== idx &&
+                    className={`${
+                      stats.length - 1 !== idx &&
                       'lg:border-r lg:border-r-light-60'
-                      } ${idx === stats.length - 1 && `ml-4`} lg: pl - 4 pr - 4`}
+                    } ${idx === stats.length - 1 && `ml-4`} lg: pl - 4 pr - 4`}
                   >
                     {!address ? (
                       <WalletConnector />
@@ -440,7 +476,8 @@ const Home = () => {
                   setRepayModal={setRepayModal}
                   balance={0}
                   handleRepay={handleRepay}
-                  repayLoading={false} />
+                  repayLoading={repayLoading}
+                />
               </div>
             </Card>
           </div>
