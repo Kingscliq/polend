@@ -47,7 +47,7 @@ const AlertModal = () => {
     <div
       className={
         alertOpen
-          ? 'block fixed inset-0 bg-black bg-opacity-50 h-full w-full z-[100]'
+          ? 'block fixed inset-0 bg-black bg-opacity-50 h-full w-full z-[200]'
           : 'hidden'
       }
     >
@@ -65,23 +65,22 @@ const AlertModal = () => {
           <div className="w-full text-center ml-5">
             {type === 'error' || type === 'notice' || type === 'success' ? (
               <div
-                className={`w-20 md:w-24 h-20 md:h-24 mx-auto mb-5 rounded-full flex items-center justify-center ${
-                  type === 'error'
+                className={`w-20 md:w-24 h-20 md:h-24 mx-auto mb-5 rounded-full flex items-center justify-center ${type === 'error'
                     ? 'bg-red-400'
                     : type === 'notice'
-                    ? 'bg-primary'
-                    : type === 'success'
-                    ? 'bg-green-600'
-                    : ''
-                }`}
+                      ? 'bg-primary'
+                      : type === 'success'
+                        ? 'bg-green-600'
+                        : ''
+                  }`}
               >
                 <img
                   src={
                     type === 'error'
                       ? close
                       : type === 'notice'
-                      ? noticeIcon
-                      : successIcon
+                        ? noticeIcon
+                        : successIcon
                   }
                   height={50}
                   width={50}

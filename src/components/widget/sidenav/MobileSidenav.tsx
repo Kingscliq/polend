@@ -51,17 +51,6 @@ const MobileSideNav = ({ openNav, setOpenNav }: any) => {
               active={location.pathname === '/market'}
             />
           </div>
-
-          <div className="mb-2">
-            <SidebarMenuItem
-              onClick={setOpenNav}
-              baseIcon={lendingBase}
-              activeIcon={lendingBase}
-              title="Learn More"
-              url="/learn-more"
-              active={location.pathname === '/learn-more'}
-            />
-          </div>
         </aside>
 
         <div className="mt-auto">
