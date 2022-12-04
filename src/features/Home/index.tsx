@@ -19,6 +19,8 @@ import RepayModal from './modals/repay-modal';
 import WithdrawModal from './modals/withdraw-modal';
 import StatCard from './components/StatsCard';
 import AssetsTable from './table/Assets';
+import { extendToBigNumber } from '@utils/converters';
+import { useAlertActions } from '@hooks/useAlert';
 
 const Home = () => {
   const { language } = useLanguage();
@@ -34,6 +36,7 @@ const Home = () => {
   const [borrowAmount, setBorrowAmount] = useState<number | string>("")
   const [repayAmount, setRepayAmount] = useState<number | string>("")
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false)
+  const [borrowLoading, setBorrowLoading] = useState<boolean>(false)
 
   // Get Balance
   const getBalance = useCallback(async () => {
@@ -59,9 +62,27 @@ const Home = () => {
   const handleDeposit = () => {
     setSupplyLoading(true)
     const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
-
     console.log(contract)
   }
+
+  const handleBorrow = async () => {
+    setSupplyLoading(true)
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, provider.getSigner())
+
+    
+
+    try {
+      if (address != null) {
+        const tx = await contract.borrow(extendToBigNumber(borrowAmount))
+        
+      } else {
+        return 0;
+      }
+    } catch (error) {
+      return 0;
+    }
+  }
+
   const getUserAccount = useCallback(async () => {
     // setLoading(true);
     try {

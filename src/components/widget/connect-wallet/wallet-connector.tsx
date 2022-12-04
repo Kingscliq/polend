@@ -82,8 +82,6 @@ const WalletConnector: React.FC<{ label?: string }> = ({ label }) => {
           title="Connect Wallet"
           modalBody={
             <>
-
-
               <div className="mt-10 grid grid-cols-3 lg:grid-cols-4 gap-8">
                 {connectors_data?.map((item) => (
                   <WalletButton

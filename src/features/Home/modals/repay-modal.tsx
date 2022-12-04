@@ -39,10 +39,8 @@ const RepayModal: React.FC<SupplyModalProps> = ({ openModal, setOpenModal, repay
 
                     </div>
                     <div>
-                        <Button label="Enter Amount" className='bg-primary' />
+                        <Button label="Enter Amount" className='bg-primary'  />
                     </div>
-
-
                 </div>
             }
         />

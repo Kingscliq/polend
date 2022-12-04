@@ -7,7 +7,7 @@ interface BorrowModalProps {
     openModal: boolean;
     setOpenModal: React.Dispatch<SetStateAction<boolean>>
     borrowAmount: string | number;
-    setBorrowAmount:React.Dispatch<SetStateAction<string | number>> 
+    setBorrowAmount: React.Dispatch<SetStateAction<string | number>>
 }
 
 const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borrowAmount, setBorrowAmount }) => {
@@ -38,7 +38,7 @@ const BorrowModal: React.FC<BorrowModalProps> = ({ openModal, setOpenModal, borr
                         </div>
                     </div>
                     <div>
-                        <Button label="Enter Amount" className='bg-primary' />
+                        <Button label={`${borrowAmount <= 0 || borrowAmount === "" ? "Enter Amount" : "Borrow Asset"}`} className='bg-primary' disabled={borrowAmount <= 0} />
                     </div>
                 </div>
             }
