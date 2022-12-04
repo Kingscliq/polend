@@ -10,6 +10,7 @@ interface SupplyModalProps {
   setSupplyAmount: React.Dispatch<SetStateAction<string | number>>;
   handleSupply: () => void;
   supplyLoading: boolean;
+  balance: number;
 }
 
 const SupplyModal: React.FC<SupplyModalProps> = ({
@@ -19,6 +20,7 @@ const SupplyModal: React.FC<SupplyModalProps> = ({
   setSupplyAmount,
   handleSupply,
   supplyLoading,
+  balance,
 }) => {
   return (
     <Modal
@@ -35,6 +37,7 @@ const SupplyModal: React.FC<SupplyModalProps> = ({
               placeholder="0.00"
               value={supplyAmount}
               onChange={(e) => setSupplyAmount(e.target.value)}
+              balance={balance}
             />
           </div>
           <div className="my-8">

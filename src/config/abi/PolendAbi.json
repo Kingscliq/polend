@@ -125,6 +125,7 @@
     "name": "loanDets",
     "outputs": [
       { "internalType": "address", "name": "user", "type": "address" },
+      { "internalType": "uint256", "name": "depositAmount", "type": "uint256" },
       {
         "internalType": "uint256",
         "name": "collateralAmount",

@@ -4,13 +4,12 @@ import Table from '@components/elements/Table';
 import { createColumnHelper } from '@tanstack/react-table';
 import { SetStateAction } from 'react';
 
-
 type Asset = {
   asset: string;
   valueUSD: number;
   apy: string;
   address: string;
-  withdraw: string
+  withdraw: string;
   supply: string;
 };
 type SupplyTableProps = {
@@ -27,15 +26,14 @@ const SupplyTable: React.FC<SupplyTableProps> = ({
   setWithdrawModal,
   balance,
 }) => {
-
   const defaultData: Asset[] = [
     {
-      asset: "MATIC",
+      asset: 'MATIC',
       valueUSD: 1.0,
       apy: '<0.01%',
       address: '',
       withdraw: '',
-      supply: ''
+      supply: '',
     },
   ];
 
@@ -43,7 +41,14 @@ const SupplyTable: React.FC<SupplyTableProps> = ({
     columnHelper.accessor((row) => row.asset, {
       id: 'asset',
       header: () => <span>Assets</span>,
-      cell: (info) => <div className='flex items-center'><span className=''><img src={matic} alt="Logo" /></span><span className='ml-2'>{info.getValue().toUpperCase()}</span></div>,
+      cell: (info) => (
+        <div className="flex items-center">
+          <span className="">
+            <img src={matic} alt="Logo" />
+          </span>
+          <span className="ml-2">{info.getValue().toUpperCase()}</span>
+        </div>
+      ),
     }),
     columnHelper.accessor((row) => row.valueUSD, {
       id: 'valueUSD',
@@ -80,7 +85,7 @@ const SupplyTable: React.FC<SupplyTableProps> = ({
               setOpenModal(true);
               setWithdrawModal(false);
             }}
-            className=" text-xs border border-purple-500 hover:opacity-50 hover:bg-primary-400 transition-all duration-500 ease-out"
+            className="text-xs border border-purple-500 hover:opacity-50 hover:bg-primary transition-all duration-300 ease-out"
           />
         </span>
       ),

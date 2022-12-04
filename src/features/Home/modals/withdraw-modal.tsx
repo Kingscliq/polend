@@ -10,6 +10,7 @@ interface SupplyModalProps {
   setWithdrawAmount: React.Dispatch<SetStateAction<number | string>>;
   handleWithdraw: () => void;
   withdrawLoading: boolean;
+  balance: number;
 }
 
 const WithdrawModal: React.FC<SupplyModalProps> = ({
@@ -19,6 +20,7 @@ const WithdrawModal: React.FC<SupplyModalProps> = ({
   setWithdrawAmount,
   handleWithdraw,
   withdrawLoading,
+  balance,
 }) => {
   return (
     <Modal
@@ -27,7 +29,14 @@ const WithdrawModal: React.FC<SupplyModalProps> = ({
       modalBody={
         <div className="my-5 text-white/75">
           <div>
-            <CustomTextField coinLabel='USD' label="Amount" placeholder="$0.00" />
+            <CustomTextField
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              coinLabel="USD"
+              label="Amount"
+              placeholder="$0.00"
+              balance={balance}
+            />
           </div>
           <div className="my-16">
             <h3 className="mb-2">Transaction Summary</h3>
@@ -52,7 +61,7 @@ const WithdrawModal: React.FC<SupplyModalProps> = ({
             <Button
               label="Enter Amount"
               className="bg-primary"
-              disabled={withdrawAmount <= 0}
+              disabled={withdrawAmount <= 0 || withdrawAmount > balance}
               onClick={handleWithdraw}
               loading={withdrawLoading}
             />
