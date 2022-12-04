@@ -1,3 +1,24 @@
+# polend_protocol
+
+# Tech Stack
+React, typescript, solidity 
+
+
+# Use Cases
+Lending - Polend lends users fund through a system known as over-collateralization, which means that users must provide a collateral token so as to be able to borrow an asset. The user can borrow up to a percentage of the amount deposited. 
+
+
+# Description
+Polend is a decentralized liquidity protocol which allows the lending of stable coins. 
+
+
+## How the system works
+The user is required to deposit a token as collateral which will be held in the smart contract. Without this collateral is will be impossible to borrow an asset.
+After a collateral has been supplied the user can borrow a certain amount which must be lesser than the collateral deposited.
+The collateral deposited is converted to its equivalent in USD using the chainlink priceFeed oracle, this way the stable coin is pegged to the US dollar.
+The protocol at moment uses a mint and burn mechanism. When a coin is borrowed the amount borrowed is minted by the stable coin and sent to the users wallet and when the user repays the stable coin is burnt.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
