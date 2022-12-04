@@ -43,7 +43,6 @@ const Home = () => {
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
 
-  console.log(supplyAmount)
   const handleSupply = async () => {
     setSupplyLoading(true);
     try {
@@ -60,27 +59,23 @@ const Home = () => {
         type: 'notice',
         url: {
           link: `${SCAN_URL}/tx/${tx.hash}`,
-          text: 'Check Transaction on BSCScan',
+          text: 'Check Transaction on PolygonScan',
         },
       });
 
-
       tx.wait()
 
-      console.log(`${SCAN_URL}/tx/${tx.hash}`)
       setAlert({
         message: 'Transaction Succesful!',
-        type: 'notice',
+        type: 'success',
         url: {
           link: `${SCAN_URL}/tx/${tx.hash}`,
-          text: 'Check Transaction on BSCScan',
+          text: 'Check Transaction on PolygonScan',
         },
       });
 
     } catch (error: any) {
       setSupplyLoading(false);
-
-      console.log(error);
       const suppleError = error?.error
         ? error.error.data.message
         : getErrorMessage(error.error.code);
