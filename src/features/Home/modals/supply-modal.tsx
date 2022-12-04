@@ -20,8 +20,6 @@ const SupplyModal: React.FC<SupplyModalProps> = ({
   handleSupply,
   supplyLoading,
 }) => {
-  console.log(supplyAmount);
-
   return (
     <Modal
       title="Supply"

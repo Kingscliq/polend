@@ -40,26 +40,24 @@ const Home = () => {
   const [supplyLoading, setSupplyLoading] = useState<boolean>(false);
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
 
-  // Get Balance
-  const getBalance = useCallback(async () => {
-    const signer = provider.getSigner();
-    let contract = new ethers.Contract(CONTRACT_ADDRESS, PolendAbi, signer);
+  const getPrice = async () => {
+    const contract = new ethers.Contract(
+      CONTRACT_ADDRESS,
+      PolendAbi,
+      provider.getSigner(),
+    );
     try {
-      if (address != null) {
-        const tifiBal = await contract.balanceOf(address);
-        setBalance(Math.floor(Number(tifiBal._hex) / Number(10 ** 18))); // TiFi Decimal is 18
-        return Math.floor(Number(tifiBal._hex) / Number(10 ** 18));
-      } else {
-        return 0;
-      }
+      const response = await contract.getPrice();
+      const price = ethers.utils.formatEther(response._hex);
+      setBalance(Number(price));
+      const resp = await contract.loanDets(address);
+      console.log(resp);
     } catch (error) {
-      return 0;
+      console.log(error);
     }
-  }, [address, provider]);
+  };
 
-  // const { data: holders, isLoading: isHolderLoading } = useQuery(['hold-data'], getTotalHolders);
-
-  console.log(borrowAmount);
+  console.log({ balance });
 
   const handleSupply = async () => {
     setSupplyLoading(true);
@@ -113,8 +111,23 @@ const Home = () => {
         provider.getSigner(),
       );
       const tx = await contract.withdraw(extendToBigNumber(withdrawAmount));
-    } catch (error) {
+      setWithdrawLoading(false);
+    } catch (error: any) {
+      setWithdrawLoading(false);
+      setWithdrawModal(false);
       console.log(error);
+      const withdrawError = error?.error
+        ? error.error.data.message
+        : getErrorMessage(error.error.code);
+
+      setAlert({
+        message: withdrawError,
+        type: 'error',
+        url: {
+          link: '',
+          text: '',
+        },
+      });
     }
   };
 
@@ -131,8 +144,6 @@ const Home = () => {
       const price = ethers.utils.formatEther(addr._hex);
       console.log({ addr, price });
       const resp = await contract.loanDets(address);
-
-      console.log(resp);
       // const collateralValue = Number(
       //   ethers.utils.formatEther(resp.loanDets()),
       // );
@@ -168,8 +179,8 @@ const Home = () => {
 
   useEffect(() => {
     if (address && provider) {
-      getBalance();
       getUserAccount();
+      getPrice();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, provider]);
@@ -301,7 +312,7 @@ const Home = () => {
                   <span className="font-medium text-sm text-tifi-grey">
                     Balance
                   </span>{' '}
-                  <span className="text-white">$200</span>
+                  <span className="text-white">${balance}</span>
                 </div>
                 <div className="border-purple-300/30 border p-1 ml-3">
                   <span className="font-medium text-sm text-tifi-grey">
@@ -313,7 +324,7 @@ const Home = () => {
                   <span className="font-medium text-sm text-tifi-grey">
                     Collateral
                   </span>{' '}
-                  <span className="text-white">$200</span>
+                  <span className="text-white">${balance}</span>
                 </div>
               </div>
               <div className="mt-6">
@@ -321,6 +332,7 @@ const Home = () => {
                   openModal={supplyModal}
                   setOpenModal={setSupplyModal}
                   setWithdrawModal={setWithdrawModal}
+                  balance={balance}
                 />
               </div>
             </Card>
