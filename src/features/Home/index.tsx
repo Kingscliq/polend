@@ -296,11 +296,6 @@ const Home = () => {
       title: 'Your Net Worth',
       value: `${balance} USD`,
     },
-    // {
-    //   id: 2,
-    //   title: 'Net APY',
-    //   value: `$${ tvl?.stakes && toFixed(tvl.stakes[0].tvl / 1000000, 4)}M`,
-    // },
   ];
 
   return (
