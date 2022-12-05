@@ -184,7 +184,6 @@ const Home = () => {
         setWithdrawModal(false);
       });
     } catch (error: any) {
-      console.log(error);
       setWithdrawLoading(false);
       setWithdrawModal(false);
       const withdrawError = error?.error
@@ -285,11 +284,7 @@ const Home = () => {
     if (address && provider) {
       getUserAccount();
     }
-  }, [
-    address,
-    provider,
-    getUserAccount,
-  ]);
+  }, [address, provider, getUserAccount]);
 
   const stats = [
     {
@@ -370,9 +365,10 @@ const Home = () => {
                 stats.map((st, idx) => (
                   <div
                     key={st.id}
-                    className={`${stats.length - 1 !== idx &&
+                    className={`${
+                      stats.length - 1 !== idx &&
                       'lg:border-r lg:border-r-light-60'
-                      } ${idx === stats.length - 1 && `ml-4`} lg: pl - 4 pr - 4`}
+                    } ${idx === stats.length - 1 && `ml-4`} lg: pl - 4 pr - 4`}
                   >
                     {!address ? (
                       <WalletConnector />
