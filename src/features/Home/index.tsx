@@ -281,14 +281,7 @@ const Home = () => {
     if (address && provider) {
       getUserAccount();
     }
-  }, [
-    address,
-    provider,
-    repayAmount,
-    debtAmount,
-    collateralAmount,
-    getUserAccount,
-  ]);
+  }, [address, getUserAccount, provider]);
 
   const stats = [
     {
