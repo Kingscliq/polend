@@ -75,6 +75,7 @@ const Home = () => {
             text: 'Check Transaction on PolygonScan',
           },
         });
+        getUserAccount();
         setSupplyLoading(false);
         setSupplyModal(false);
       });
@@ -126,6 +127,7 @@ const Home = () => {
               text: 'Check Transaction on PolygonScan',
             },
           });
+          getUserAccount();
           setBorrowLoading(false);
           setBorrowModal(false);
         });
@@ -177,6 +179,7 @@ const Home = () => {
             text: 'Check Transaction on PolygonScan',
           },
         });
+        getUserAccount();
         setWithdrawLoading(false);
         setWithdrawModal(false);
       });
@@ -229,6 +232,7 @@ const Home = () => {
               text: 'Check Transaction on PolygonScan',
             },
           });
+          getUserAccount();
           setRepayLoading(false);
         });
       }
