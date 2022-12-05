@@ -284,9 +284,6 @@ const Home = () => {
   }, [
     address,
     provider,
-    // repayAmount,
-    // debtAmount,
-    // collateralAmount,
     getUserAccount,
   ]);
 
